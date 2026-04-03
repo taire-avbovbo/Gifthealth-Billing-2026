@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GiftHealth — February 2026 Billing Report</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#fffefa;color:#111;font-size:13px;line-height:1.6;}
+
+.header{background:#111;color:#fff;padding:28px 24px 22px;border-top:3px solid #f5cf46;}
+.h-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;}
+.h-title{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:2px;}
+.h-title span{color:#5eead4;}
+.h-period{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:18px;}
+.h-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.h-stat{background:rgba(255,255,255,.06);padding:10px 14px;border-top:2px solid #f5cf46;}
+.h-stat-val{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;line-height:1;}
+.h-stat-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:3px;}
+
+.tabbar{background:#fff;border-bottom:1px solid #d0cfc8;display:flex;padding:0 24px;position:sticky;top:0;z-index:50;}
+.tab{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:10px 14px;border:none;background:none;color:#888;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+.tab:hover{color:#333;}.tab.act{color:#111;border-bottom-color:#f5cf46;}
+
+.page-body{padding:20px 24px 64px;max-width:1320px;}
+.pane{display:none;}.pane.act{display:block;}
+
+/* Section headers - LARGER and BOLDER */
+.sec{font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:#111;margin:24px 0 10px;padding-bottom:6px;border-bottom:2px solid #f5cf46;}
+.sec:first-child{margin-top:0;}
+.sec-sm{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.13em;color:#888;margin:16px 0 7px;padding-bottom:4px;border-bottom:1px solid #e0ded8;}
+
+.card{background:#fff;border:1px solid #d8d6d0;margin-bottom:12px;}
+
+/* Callouts */
+.callout{border-left:3px solid var(--cc,#64748b);background:var(--cb,#f8fafc);padding:11px 15px;font-size:12px;color:#475569;margin-bottom:12px;line-height:1.65;}
+.callout strong{color:#111;}
+.callout.blue{--cc:#2563eb;--cb:#eff6ff;}
+.callout.green{--cc:#16a34a;--cb:#f0fdf4;}
+.callout.amber{--cc:#d97706;--cb:#fffbeb;}
+.callout.teal{--cc:#0d9488;--cb:#f0fdfa;}
+
+/* Equation boxes - FULL WIDTH, SAME HEIGHT blocks */
+.eq-box{background:#fff;border:1px solid #d8d6d0;padding:20px 24px;margin-bottom:14px;}
+.eq-box h3{font-size:11px;font-family:'DM Mono',monospace;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;}
+.eq-row{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;}
+.eq-block{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 18px;min-width:100px;min-height:80px;}
+.eq-block.prod{background:#f0fdfa;border:1px solid #99f6e4;}
+.eq-block.train{background:#eff6ff;border:1px solid #bfdbfe;}
+.eq-block.invoice{background:#f0fdf4;border:1px solid #bbf7d0;}
+.eq-block.assembled{background:#fffbeb;border:1px solid #fde68a;}
+.eq-block.asm-buf{background:#faf5ff;border:1px solid #e9d5ff;}
+.eq-block.buffer{background:#f5f3ff;border:1px solid #e9d5ff;}
+.eq-block.ot{background:#fef2f2;border:1px solid #fecaca;}
+.eq-block.total-box{background:#f0fdfa;border:1px solid #0d9488;}
+.eq-val{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;line-height:1.2;}
+.eq-lbl{font-family:'DM Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-top:4px;text-align:center;line-height:1.3;}
+.eq-op{font-size:20px;font-weight:800;color:#ccc;display:flex;align-items:center;padding:0 2px;}
+.eq-note{font-size:11px;color:#475569;margin-top:12px;padding:8px 12px;border-left:3px solid var(--nc,#0d9488);background:var(--nb,#f0fdfa);line-height:1.55;}
+.eq-note strong{color:#0d9488;}
+
+/* Summary box */
+.summary-box{background:#111;color:#fff;padding:18px 22px;margin-bottom:14px;line-height:1.7;}
+.summary-box .big-num{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:#5eead4;}
+.summary-box .exp{font-size:12px;color:rgba(255,255,255,.65);margin-top:6px;}
+
+/* Tables */
+.dtbl{width:100%;border-collapse:collapse;font-size:12px;}
+.dtbl th{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:#fff;background:#111;padding:8px 10px;text-align:right;white-space:nowrap;}
+.dtbl th:first-child{text-align:left;padding-left:14px;}
+.dtbl td{padding:9px 10px;border-bottom:1px solid #eee;color:#555;text-align:right;font-family:'DM Mono',monospace;font-size:11px;}
+.dtbl td:first-child{text-align:left;color:#111;font-family:'DM Sans',sans-serif;font-weight:500;font-size:12px;padding-left:14px;}
+.dtbl tr:hover td{background:#fafaf8;}
+.dtbl tr.sec-row td{background:#f1f5f9;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #d8d6d0;}
+.dtbl tr.sub td{background:#f0fdfa;font-weight:600;border-bottom:2px solid #99f6e4;}
+.dtbl tr.tot td{background:#0f172a !important;color:#fff;font-weight:600;border:none;}
+.dtbl td.pos{color:#0a7c4e;font-weight:600;}.dtbl td.neg{color:#dc2626;font-weight:600;}
+.dtbl td.muted{color:#cbd5e1;}
+
+/* Expandable rows */
+.expand-trigger{cursor:pointer;user-select:none;}
+.expand-trigger td:first-child::before{content:'+ ';font-family:'DM Mono',monospace;font-size:11px;color:#0d9488;font-weight:700;}
+.expand-trigger.open td:first-child::before{content:'- ';}
+.expand-detail{display:none;}
+.expand-detail.open{display:table-row;}
+.expand-detail td{background:#fafaf8 !important;padding:6px 10px 6px 30px;font-size:10px;color:#666;border-bottom:1px solid #f0efe8;}
+.expand-detail td:first-child{padding-left:30px;font-weight:400;color:#666;font-size:11px;}
+
+/* Comment badge */
+.cbadge{
+  display:inline-flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;
+}
+.cbadge-icon{
+  display:flex;align-items:center;justify-content:center;
+  width:22px;height:22px;background:#94a3b8;color:#fff;
+  font-size:10px;font-weight:700;font-family:'DM Mono',monospace;
+}
+.cbadge-icon:hover{background:#111;}
+.cbadge-label{font-family:'DM Mono',monospace;font-size:7px;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;font-weight:500;}
+
+/* Global tooltip */
+#tooltip{
+  display:none;position:fixed;z-index:9999;
+  background:#111;color:#fff;padding:14px 18px;
+  max-width:400px;font-size:12px;line-height:1.65;
+  font-family:'DM Sans',sans-serif;
+  box-shadow:0 8px 30px rgba(0,0,0,.3);
+  pointer-events:none;
+}
+
+/* Scenario cards */
+.scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.scenario-card{background:#fff;border:1px solid #d8d6d0;padding:16px 18px;position:relative;}
+.scenario-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--sc,#888);}
+.scenario-num{font-family:'DM Mono',monospace;font-size:9px;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.scenario-title{font-size:14px;font-weight:700;color:#111;margin-bottom:8px;}
+.scenario-body{font-size:11.5px;color:#555;line-height:1.55;}
+.scenario-body strong{color:#111;}
+.scenario-example{font-size:11px;margin-top:8px;padding:10px 12px;line-height:1.6;background:var(--se,#f8fafb);}
+.scenario-example .ex-label{font-weight:700;font-size:12px;margin-bottom:2px;}
+.scenario-example .ex-data{font-family:'DM Mono',monospace;font-size:11px;color:#555;}
+
+/* Recon bars */
+.recon-item{padding:16px 18px;border-bottom:1px solid #eee;}
+.recon-item:last-child{border-bottom:none;}
+.recon-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+.recon-label{font-size:13px;font-weight:600;color:#111;}
+.recon-label small{font-weight:400;color:#888;font-size:11px;display:block;}
+.recon-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:#0d9488;}
+.bar-line{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.bar-tag{font-family:'DM Mono',monospace;font-size:9px;color:#888;width:65px;text-align:right;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em;}
+.bar-track{flex:1;height:26px;background:#eee;position:relative;display:flex;}
+.bar-fill{height:100%;display:flex;align-items:center;padding:0 8px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:#fff;white-space:nowrap;}
+.bar-fill.inv-prod{background:#0d9488;}.bar-fill.inv-train{background:#2563eb;}
+.bar-fill.asm{background:#d97706;}.bar-fill.buf{background:#7c3aed;opacity:.75;}
+.bar-fill.asm-zero{background:transparent;color:#ccc;font-size:10px;padding:0 8px;}
+.recon-comment{font-size:11px;color:#555;line-height:1.55;padding:8px 12px;background:#f8faf8;border-left:3px solid #0d9488;margin-top:8px;}
+.bar-legend{display:flex;gap:12px;font-family:'DM Mono',monospace;font-size:9px;color:#888;letter-spacing:.04em;text-transform:uppercase;}
+.bar-legend span::before{content:'';display:inline-block;width:8px;height:8px;margin-right:4px;vertical-align:middle;}
+.bar-legend .l-p::before{background:#0d9488;}.bar-legend .l-t::before{background:#2563eb;}
+.bar-legend .l-a::before{background:#d97706;}.bar-legend .l-b::before{background:#7c3aed;opacity:.75;}
+
+/* Calendar */
+.cal-section{margin-bottom:20px;}
+.cal-title{font-size:13px;font-weight:700;color:#111;margin-bottom:6px;}
+.cal-title span{font-weight:400;color:#888;font-size:11px;}
+.cal-grid{display:grid;grid-template-columns:200px repeat(4,1fr);gap:1px;background:#d8d6d0;border:1px solid #d8d6d0;}
+.cal-grid>*{background:#fff;}
+.cal-hdr{background:#0f172a !important;color:#fff;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;text-align:center;}
+.cal-hdr:first-child{text-align:left;}
+.cal-row-label{padding:8px 12px;font-size:12px;font-weight:600;color:#111;display:flex;flex-direction:column;justify-content:center;}
+.cal-row-label small{font-weight:400;color:#888;font-size:10px;}
+.cal-cell{padding:6px 8px;text-align:center;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;min-height:40px;}
+.cal-cell.prod{background:#dcfce7;color:#166534;}
+.cal-cell.train{background:#dbeafe;color:#1e40af;}
+.cal-cell.empty{background:#fffefa;color:#ccc;}
+.cal-cell.mixed{background:linear-gradient(135deg,#dbeafe 50%,#dcfce7 50%);color:#1e3a5f;font-size:9px;}
+.cal-footnote{font-size:10px;color:#888;margin-top:6px;font-style:italic;}
+.cal-legend{display:flex;gap:16px;margin-top:12px;font-size:11px;color:#888;}
+.cal-legend-dot{width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:4px;}
+.cal-legend-dot.p{background:#dcfce7;border:1px solid #bbf7d0;}
+.cal-legend-dot.t{background:#dbeafe;border:1px solid #bfdbfe;}
+.cal-legend-dot.e{background:#f5f5f0;border:1px solid #e0ded8;}
+
+/* Definitions */
+.def-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px 18px;}
+.def-item{padding:10px 14px;background:#fafaf8;border-left:3px solid #0d9488;}
+.def-term{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:#0d9488;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.def-desc{font-size:11px;color:#555;line-height:1.5;}
+
+@media(max-width:1000px){.h-stats{grid-template-columns:repeat(3,1fr);}.scenario-grid{grid-template-columns:1fr;}.def-grid{grid-template-columns:1fr;}}
+@media(max-width:700px){.h-stats{grid-template-columns:1fr 1fr;}.page-body,.header,.tabbar{padding-left:12px;padding-right:12px;}}
+</style>
+</head>
+<body>
+
+<!-- Login Gate -->
+<div id="login-gate" style="position:fixed;inset:0;background:#fffefa;display:flex;align-items:center;justify-content:center;z-index:9999;">
+  <div style="padding:48px 52px;width:400px;text-align:center;background:#fff;border:1px solid #eee;">
+    <img src="data:image/png;base64,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" alt="Hugo" style="height:48px;margin-bottom:24px;display:inline-block;">
+    <div style="font-size:20px;font-weight:700;color:#111;margin-bottom:3px;">Billing Report</div>
+    <div style="font-size:12px;color:#999;margin-bottom:32px;">February 2026 &middot; Confidential</div>
+    <input id="login-email" type="email" placeholder="Email address"
+      style="width:100%;padding:12px 14px;border:2px solid #eee;font-family:'DM Sans',sans-serif;font-size:13px;color:#111;outline:none;margin-bottom:10px;background:#fff;"
+      onfocus="this.style.borderColor='#f5cf46'" onblur="this.style.borderColor='#eee'">
+    <input id="login-pw" type="password" placeholder="Password"
+      style="width:100%;padding:12px 14px;border:2px solid #eee;font-family:'DM Sans',sans-serif;font-size:13px;color:#111;outline:none;margin-bottom:14px;background:#fff;"
+      onkeydown="if(event.key==='Enter')doLogin()"
+      onfocus="this.style.borderColor='#f5cf46'" onblur="this.style.borderColor='#eee'">
+    <div id="login-err" style="font-size:11px;color:#dc2626;margin-bottom:10px;min-height:16px;"></div>
+    <button onclick="doLogin()"
+      style="width:100%;padding:13px;background:#111;color:#fff;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">
+      Access Report
+    </button>
+    <div style="font-size:10px;color:#bbb;margin-top:20px;">hugoinc.com</div>
+  </div>
+</div>
+<script>
+(function(){
+  var validEmails=['brian.malcolm@gifthealth.com','christina.j@gifthealth.com','funmi@hugotech.co','kristi.hebert@gifthealth.com','madi@gifthealth.com','travis.low@hugotech.co','taire.avbovbo@hugotech.co'];
+  var pw='GHrocks2026!';
+  window.doLogin=function(){
+    var email=document.getElementById('login-email').value.trim().toLowerCase();
+    var pass=document.getElementById('login-pw').value;
+    var err=document.getElementById('login-err');
+    if(validEmails.indexOf(email)===-1){err.textContent='Email not recognised.';return;}
+    if(pass!==pw){err.textContent='Incorrect password.';document.getElementById('login-pw').value='';return;}
+    document.getElementById('login-gate').style.display='none';
+  };
+})();
+</script>
+
+<div id="tooltip"></div>
+
+<div class="header">
+  <div class="h-eyebrow">Hugo Technologies &mdash; GiftHealth Inc. &middot; Confidential</div>
+  <h1 class="h-title">February 2026 <span>Billing Report</span></h1>
+  <div class="h-period">01 Feb &ndash; 28 Feb 2026 &middot; 20 working days &middot; All workflows</div>
+  <div class="h-stats">
+    <div class="h-stat"><div class="h-stat-val" style="color:#5eead4">$954,104</div><div class="h-stat-lbl">Total invoiced</div></div>
+    <div class="h-stat"><div class="h-stat-val">43,660</div><div class="h-stat-lbl">Invoiced hours</div></div>
+    <div class="h-stat"><div class="h-stat-val" style="color:#fbbf24">35,573</div><div class="h-stat-lbl">Assembled (scheduled)</div></div>
+    <div class="h-stat"><div class="h-stat-val">48,853</div><div class="h-stat-lbl">Total provided hours</div></div>
+    <div class="h-stat"><div class="h-stat-val" style="color:#5eead4">+11.9%</div><div class="h-stat-lbl">Oversupply vs invoiced</div></div>
+  </div>
+</div>
+
+<div class="tabbar">
+  <button class="tab act" onclick="sw('eq',this)">Billing Equation</button>
+  <button class="tab" onclick="sw('summary',this)">Invoice Summary</button>
+  <button class="tab" onclick="sw('recon',this)">Hour Reconciliation</button>
+  <button class="tab" onclick="sw('calendar',this)">Calendar View</button>
+  <button class="tab" onclick="sw('defs',this)">Definitions</button>
+</div>
+
+<div class="page-body">
+
+<!-- ═══════ TAB 1: BILLING EQUATION ═══════ -->
+<div id="p-eq" class="pane act">
+
+<div class="callout blue"><strong>Purpose:</strong> GiftHealth asked Hugo to clarify how invoice hours relate to Assembled (workforce monitoring) hours. This report walks through the billing equation, reconciles every line item, and provides a calendar view of training vs. production for February 2026.</div>
+
+<div class="summary-box">
+  <div style="margin-bottom:6px">Hugo provided <span class="big-num">48,853</span> total hours but only invoiced <span class="big-num">43,660</span> &mdash; a gap of <span class="big-num">5,193</span> hours <span style="color:#5eead4;font-weight:700">(11.9%)</span></div>
+  <div class="exp">Invoiced hours only include production + training for the <strong style="color:#fff">contracted</strong> headcount. Hugo staffs additional "buffer" agents (368 total vs. 328 billable) and absorbs their hours. Assembled also includes buffer agents in production, which is why Assembled scheduled hours (35,573) can exceed contracted production hours (22,480). <strong style="color:#5eead4">Assembled only tracks agents once they enter production/nesting &mdash; training hours never appear in Assembled.</strong></div>
+</div>
+
+<div class="sec">What GiftHealth pays for</div>
+
+<div class="eq-box">
+  <h3>Invoiced hours = contracted production + contracted training + overtime</h3>
+  <div class="eq-row">
+    <div class="eq-block prod"><div class="eq-val" style="color:#0d9488">22,480</div><div class="eq-lbl">Production hrs<br>(contracted)</div></div>
+    <div class="eq-op">+</div>
+    <div class="eq-block train"><div class="eq-val" style="color:#2563eb">12,080</div><div class="eq-lbl">Training hrs<br>(contracted)</div></div>
+    <div class="eq-op">+</div>
+    <div class="eq-block ot"><div class="eq-val" style="color:#dc2626">1,138</div><div class="eq-lbl">Overtime hrs<br>(20% premium)</div></div>
+    <div class="eq-op">=</div>
+    <div class="eq-block invoice"><div class="eq-val" style="color:#16a34a">43,660</div><div class="eq-lbl">Invoiced hours</div></div>
+    <div class="eq-op">&rarr;</div>
+    <div class="eq-block invoice"><div class="eq-val" style="color:#16a34a">$954,104</div><div class="eq-lbl">Total invoice</div></div>
+  </div>
+</div>
+
+<div class="sec">What Hugo actually provides</div>
+
+<div class="eq-box">
+  <h3>Total provided = assembled (contracted + buffer) + training (contracted + buffer)</h3>
+  <div class="eq-row">
+    <div class="eq-block assembled"><div class="eq-val" style="color:#d97706">~31,750</div><div class="eq-lbl">Assembled<br>(contracted)</div></div>
+    <div class="eq-op">+</div>
+    <div class="eq-block asm-buf"><div class="eq-val" style="color:#7c3aed">~3,823</div><div class="eq-lbl">Assembled<br>(buffer)</div></div>
+    <div class="eq-op">+</div>
+    <div class="eq-block train"><div class="eq-val" style="color:#2563eb">12,080</div><div class="eq-lbl">Training<br>(contracted)</div></div>
+    <div class="eq-op">+</div>
+    <div class="eq-block buffer"><div class="eq-val" style="color:#7c3aed">1,200</div><div class="eq-lbl">Training<br>(buffer)</div></div>
+    <div class="eq-op">=</div>
+    <div class="eq-block total-box"><div class="eq-val" style="color:#0d9488">48,853</div><div class="eq-lbl">Total provided</div></div>
+  </div>
+  <div class="eq-note" style="--nc:#d97706;--nb:#fffbeb;margin-top:14px"><strong style="color:#d97706">Note:</strong> Assembled hours (35,573 total) include both contracted and buffer agent production time, and include overtime hours. The contracted/buffer split above is estimated from headcount ratios per location. Training hours are never tracked in Assembled.</div>
+</div>
+
+<div class="sec">Three scenarios &mdash; with real Feb 2026 examples</div>
+
+<div class="scenario-grid">
+  <div class="scenario-card" style="--sc:#0a7c4e">
+    <div class="scenario-num">Scenario 1</div>
+    <div class="scenario-title" style="color:#0a7c4e">Invoiced &lt; Assembled</div>
+    <div class="scenario-body"><strong>Steady-state production, no training.</strong> Buffer agents add hours to Assembled that aren't billed. Hugo oversupplies.</div>
+    <div class="scenario-example" style="--se:#f0fdf4;border-left:3px solid #0a7c4e">
+      <div class="ex-label" style="color:#0a7c4e">Lilly SA &mdash; South Africa</div>
+      <div class="ex-data">
+        Invoiced: <strong style="color:#0a7c4e">13,600</strong> hrs<br>
+        Assembled: <strong style="color:#d97706">17,793</strong> hrs<br>
+        Gap: <strong>+4,193 hrs</strong> from 18 buffer agents
+      </div>
+    </div>
+  </div>
+  <div class="scenario-card" style="--sc:#d97706">
+    <div class="scenario-num">Scenario 2</div>
+    <div class="scenario-title" style="color:#d97706">Invoiced &cong; Assembled</div>
+    <div class="scenario-body"><strong>Mix of production + training.</strong> Training hrs (not in Assembled) roughly offset buffer production hrs (in Assembled but not billed).</div>
+    <div class="scenario-example" style="--se:#fffbeb;border-left:3px solid #d97706">
+      <div class="ex-label" style="color:#d97706">Lilly MO Wave 1&amp;2 &mdash; Missouri</div>
+      <div class="ex-data">
+        Invoiced: <strong style="color:#0a7c4e">12,000</strong> hrs<br>
+        Assembled: <strong style="color:#d97706">9,319</strong> hrs<br>
+        Diff: <strong>3,120 training hrs</strong> not in Assembled
+      </div>
+    </div>
+  </div>
+  <div class="scenario-card" style="--sc:#dc2626">
+    <div class="scenario-num">Scenario 3</div>
+    <div class="scenario-title" style="color:#dc2626">Invoiced &gt; Assembled</div>
+    <div class="scenario-body"><strong>All agents in training.</strong> Assembled = 0 because training isn't tracked. 100% of invoiced hours are training.</div>
+    <div class="scenario-example" style="--se:#fef2f2;border-left:3px solid #dc2626">
+      <div class="ex-label" style="color:#dc2626">Lilly Lagos &mdash; Nigeria</div>
+      <div class="ex-data">
+        Invoiced: <strong style="color:#0a7c4e">4,800</strong> hrs (all training)<br>
+        Assembled: <strong style="color:#dc2626">0</strong> hrs<br>
+        + <strong style="color:#7c3aed">1,200 buffer training hrs</strong> absorbed
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ═══════ TAB 2: INVOICE SUMMARY ═══════ -->
+<div id="p-summary" class="pane">
+
+<div class="sec-sm" style="margin-top:0">Other workflows (South Africa &mdash; steady state)</div>
+<div class="callout teal">These 6 workflows are in steady-state production. No training in February. Billing = contracted agents &times; days &times; hrs/day &times; rate.</div>
+
+<div class="card"><div style="overflow-x:auto">
+<table class="dtbl">
+  <thead><tr><th>Workflow</th><th>Billable</th><th>Actual</th><th>Days</th><th>Hrs/Day</th><th>Invoiced Hrs</th><th>Assembled</th><th>Rate</th><th>Amount</th><th></th></tr></thead>
+  <tbody>
+    <tr><td>Gastro (Agents)</td><td>45</td><td>47</td><td>20</td><td>8</td><td>7,200</td><td class="pos">8,461</td><td>$14.75</td><td>$106,200</td><td><span class="cbadge" data-tip="2 buffer agents provide coverage. Assembled shows 8,461 scheduled hrs vs 7,200 invoiced. The extra 1,261 hrs are from buffer agents. Hugo absorbs this cost."><span class="cbadge-icon">?</span><span class="cbadge-label">Comment</span></span></td></tr>
+    <tr><td>Gastro (Team Leads)</td><td>3</td><td>3</td><td>20</td><td>8</td><td>480</td><td class="muted">&mdash;</td><td>$14.75</td><td>$7,080</td><td></td></tr>
+    <tr><td>Bot Monitoring</td><td>6</td><td>8</td><td>20</td><td>8</td><td>960</td><td class="muted">&mdash;</td><td>$14.75</td><td>$14,160</td><td><span class="cbadge" data-tip="2 buffer agents. Hugo staffs 8 but bills for 6."><span class="cbadge-icon">?</span><span class="cbadge-label">Comment</span></span></td></tr>
+    <tr><td>Social Media Monitoring</td><td>1</td><td>1</td><td>20</td><td>1</td><td>20</td><td class="muted">&mdash;</td><td>$14.75</td><td>$295</td><td></td></tr>
+    <tr><td>WFM 1 &mdash; RTA</td><td>2</td><td>2</td><td>20</td><td>7</td><td>280</td><td class="muted">&mdash;</td><td>$14.75</td><td>$4,130</td><td></td></tr>
+    <tr><td>WFM 3 &mdash; Scheduler</td><td>1</td><td>1</td><td>20</td><td>8</td><td>160</td><td class="muted">&mdash;</td><td>$14.75</td><td>$2,360</td><td></td></tr>
+    <tr class="sub"><td>Subtotal &mdash; Other</td><td>58</td><td>62</td><td></td><td></td><td>9,100</td><td>8,461</td><td></td><td>$134,225</td><td></td></tr>
+  </tbody>
+</table>
+</div></div>
+
+<div class="sec-sm">Lilly workflow (SA, Lagos, Missouri)</div>
+<div class="callout amber"><strong>February was a high-training month.</strong> Lagos launched Wave 1 (02/16), Missouri onboarded Wave 2 (prod from 02/20) and Wave 3 (training from 02/23), and Team Leads were ramping. Many line items show <strong>zero Assembled hours</strong> because agents were in training, which Assembled does not track. Click <strong>+</strong> on any row to expand the billable vs. buffer breakdown. <strong style="color:#94a3b8">Hover over <span style="background:#94a3b8;color:#fff;padding:1px 5px;font-family:'DM Mono',monospace;font-size:10px">?</span> to see comments.</strong></div>
+
+<div class="card"><div style="overflow-x:auto">
+<table class="dtbl" id="lilly-tbl">
+  <thead><tr><th>Workflow</th><th>Billable</th><th>Actual</th><th>Days</th><th>Training Hrs</th><th>Prod Hrs</th><th>Invoiced Hrs</th><th>Assembled</th><th>Rate</th><th>OT Hrs</th><th>OT Rate</th><th>Amount</th><th></th></tr></thead>
+  <tbody>
+    <tr class="sec-row"><td colspan="13">Agents</td></tr>
+
+    <tr class="expand-trigger" data-target="exp-sa"><td>Lilly SA</td><td>85</td><td>103</td><td>20</td><td class="muted">0</td><td>13,600</td><td>13,600</td><td class="pos">17,793</td><td>$14.75</td><td>839</td><td>$17.70</td><td>$215,450</td>
+    <td><span class="cbadge" data-tip="85 contracted, 103 actual. 18 buffer agents in production. Assembled (17,793) exceeds invoiced (13,600) by 4,193 hrs — 30.8% oversupply from Hugo. No training in Feb (last SA ramp was Dec). OT hrs requested by GH for Kwik Pen launch, billed at 20% premium."><span class="cbadge-icon">?</span><span class="cbadge-label">Comment</span></span></td></tr>
+    <tr class="expand-detail" id="exp-sa"><td>Contracted (85 agents)</td><td></td><td></td><td>20</td><td>0</td><td>13,600</td><td style="color:#0a7c4e;font-weight:600">13,600</td><td>~14,686</td><td></td><td></td><td></td><td colspan="2">Billed &mdash; production only</td></tr>
+    <tr class="expand-detail" id="exp-sa"><td style="color:#7c3aed">Buffer (18 agents)</td><td></td><td></td><td>20</td><td>0</td><td>2,880</td><td style="color:#dc2626">0</td><td>~3,107</td><td></td><td></td><td></td><td colspan="2">Not billed &mdash; Hugo absorbs</td></tr>
+
+    <tr class="expand-trigger" data-target="exp-lag"><td>Lilly Lagos</td><td>60</td><td>75</td><td>10</td><td style="color:#2563eb;font-weight:600">4,800</td><td class="muted">0</td><td>4,800</td><td class="neg">0</td><td>$13.68</td><td class="muted">0</td><td>$16.42</td><td>$65,664</td>
+    <td><span class="cbadge" data-tip="Wave 1 started 02/16. All 75 agents in training for 10 working days. Zero Assembled because training not tracked there. GH requested 60; Hugo added 15 buffer. Only 60 x 10 x 8 = 4,800 hrs billed. Buffer training (15 x 10 x 8 = 1,200 hrs) absorbed by Hugo."><span class="cbadge-icon">?</span><span class="cbadge-label">Comment</span></span></td></tr>
+    <tr class="expand-detail" id="exp-lag"><td>Contracted (60 agents)</td><td></td><td></td><td>10</td><td style="color:#2563eb">4,800</td><td>0</td><td style="color:#0a7c4e;font-weight:600">4,800</td><td>0</td><td></td><td></td><td></td><td colspan="2">Billed &mdash; training only</td></tr>
+    <tr class="expand-detail" id="exp-lag"><td style="color:#7c3aed">Buffer (15 agents)</td><td></td><td></td><td>10</td><td style="color:#7c3aed">1,200</td><td>0</td><td style="color:#dc2626">0</td><td>0</td><td></td><td></td><td></td><td colspan="2">Not billed &mdash; Hugo absorbs</td></tr>
+
+    <tr class="expand-trigger" data-target="exp-mo12"><td>Lilly MO W1&amp;2</td><td>75</td><td>78</td><td>20</td><td style="color:#2563eb;font-weight:600">3,120</td><td>8,880</td><td>12,000</td><td>9,319</td><td>$35.00</td><td>299</td><td>$42.00</td><td>$432,558</td>
+    <td><span class="cbadge" data-tip="W1 (45 agents): production all 20 days = 7,200 hrs. W2 (30 agents): trained 13 days (02/01-02/19) = 3,120 hrs, then production 7 days (02/20-02/28) = 1,680 hrs. Assembled (9,319) captures W1 all month + W2 from ~02/23 only; includes 3 buffer agents. OT = Kwik Pen launch at 20% premium."><span class="cbadge-icon">?</span><span class="cbadge-label">Comment</span></span></td></tr>
+    <tr class="expand-detail" id="exp-mo12"><td>Wave 1 (45 agents &times; 20d)</td><td></td><td></td><td>20</td><td>0</td><td>7,200</td><td style="color:#0a7c4e;font-weight:600">7,200</td><td>~7,200</td><td></td><td></td><td></td><td colspan="2">Production all month</td></tr>
+    <tr class="expand-detail" id="exp-mo12"><td>Wave 2 training (30 &times; 13d)</td><td></td><td></td><td>13</td><td style="color:#2563eb">3,120</td><td>0</td><td style="color:#0a7c4e;font-weight:600">3,120</td><td>0</td><td></td><td></td><td></td><td colspan="2">Not in Assembled</td></tr>
+    <tr class="expand-detail" id="exp-mo12"><td>Wave 2 production (30 &times; 7d)</td><td></td><td></td><td>7</td><td>0</td><td>1,680</td><td style="color:#0a7c4e;font-weight:600">1,680</td><td>~2,119</td><td></td><td></td><td></td><td colspan="2">Assembled from ~02/23</td></tr>
+    <tr class="expand-detail" id="exp-mo12"><td style="color:#7c3aed">Buffer (3 agents)</td><td></td><td></td><td>20</td><td>0</td><td>480</td><td style="color:#dc2626">0</td><td>included</td><td></td><td></td><td></td><td colspan="2">Not billed</td></tr>
+
+    <tr class="expand-trigger" data-target="exp-mo3"><td>Lilly MO W3</td><td>26</td><td>26</td><td>5</td><td style="color:#2563eb;font-weight:600">1,040</td><td class="muted">0</td><td>1,040</td><td class="neg">0</td><td>$35.00</td><td class="muted">0</td><td>$42.00</td><td>$36,400</td>
+    <td><span class="cbadge" data-tip="26 agents started training 02/23. Only 5 working days in Feb, all in training. Zero Assembled. No buffer agents for this wave."><span class="cbadge-icon">?</span><span class="cbadge-label">Comment</span></span></td></tr>
+    <tr class="expand-detail" id="exp-mo3"><td>Contracted (26 agents)</td><td></td><td></td><td>5</td><td style="color:#2563eb">1,040</td><td>0</td><td style="color:#0a7c4e;font-weight:600">1,040</td><td>0</td><td></td><td></td><td></td><td colspan="2">All training, no buffers</td></tr>
+
+    <tr class="sec-row"><td colspan="13">Team Leads</td></tr>
+    <tr><td>Lilly SA (TLs)</td><td>9</td><td>9</td><td>20</td><td style="color:#2563eb;font-weight:600">1,440</td><td class="muted">0</td><td>1,440</td><td class="muted">&mdash;</td><td>$14.75</td><td class="muted">0</td><td></td><td>$21,240</td><td></td></tr>
+    <tr><td>Lilly Lagos (TLs)</td><td>6</td><td>6</td><td>10</td><td style="color:#2563eb;font-weight:600">480</td><td class="muted">0</td><td>480</td><td class="muted">&mdash;</td><td>$13.68</td><td class="muted">0</td><td></td><td>$6,566</td><td></td></tr>
+    <tr><td>Lilly MO W1&amp;2 (TLs)</td><td>7</td><td>7</td><td>20</td><td style="color:#2563eb;font-weight:600">1,120</td><td class="muted">0</td><td>1,120</td><td class="muted">&mdash;</td><td>$35.00</td><td class="muted">0</td><td></td><td>$39,200</td><td></td></tr>
+    <tr><td>Lilly MO W3 (TLs)</td><td>2</td><td>2</td><td>5</td><td style="color:#2563eb;font-weight:600">80</td><td class="muted">0</td><td>80</td><td class="muted">&mdash;</td><td>$35.00</td><td class="muted">0</td><td></td><td>$2,800</td><td></td></tr>
+
+    <tr class="sub"><td>Subtotal &mdash; Lilly</td><td>270</td><td>306</td><td></td><td>12,080</td><td>22,480</td><td>34,560</td><td>27,112</td><td></td><td>1,138</td><td></td><td>$819,879</td><td></td></tr>
+    <tr class="tot"><td>Grand Total</td><td>328</td><td>368</td><td></td><td>12,080</td><td>31,580</td><td>43,660</td><td>35,573</td><td></td><td>1,138</td><td></td><td>$954,104</td><td></td></tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+
+<!-- ═══════ TAB 3: HOUR RECONCILIATION ═══════ -->
+<div id="p-recon" class="pane">
+<div class="callout green"><strong>Bottom line:</strong> For every line item, Hugo either invoices exactly what was contracted or invoices less than the total hours provided.</div>
+
+<div class="card">
+  <div style="padding:12px 18px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
+    <div><div style="font-size:12px;font-weight:600">Invoiced vs. Assembled &mdash; Lilly line items</div><div style="font-size:10px;color:#888">Hover bars for details</div></div>
+    <div class="bar-legend"><span class="l-p">Production</span><span class="l-t">Training</span><span class="l-a">Assembled</span><span class="l-b">Buffer (unbilled)</span></div>
+  </div>
+  <div id="recon-box"></div>
+</div>
+</div>
+
+<!-- ═══════ TAB 4: CALENDAR ═══════ -->
+<div id="p-calendar" class="pane">
+<div class="callout blue"><strong>Calendar view:</strong> Each row shows a wave/cohort across February's 4 working weeks. Cells show whether agents were in <span style="background:#dcfce7;padding:1px 6px;font-weight:600;color:#166534">Production</span> (tracked in Assembled) or <span style="background:#dbeafe;padding:1px 6px;font-weight:600;color:#1e40af">Training</span> (NOT in Assembled).</div>
+
+<div class="sec-sm" style="margin-top:0">Other workflows &mdash; 100% production</div>
+<div class="cal-section">
+  <div class="cal-grid">
+    <div class="cal-hdr">Workflow</div><div class="cal-hdr">Week 1<br><span style="font-weight:400;font-size:8px;opacity:.6">Feb 2-6</span></div><div class="cal-hdr">Week 2<br><span style="font-weight:400;font-size:8px;opacity:.6">Feb 9-13</span></div><div class="cal-hdr">Week 3<br><span style="font-weight:400;font-size:8px;opacity:.6">Feb 16-20</span></div><div class="cal-hdr">Week 4<br><span style="font-weight:400;font-size:8px;opacity:.6">Feb 23-27</span></div>
+    <div class="cal-row-label"><strong>All Other Workflows</strong><small>58 billed / 62 actual</small></div>
+    <div class="cal-cell prod">Production</div><div class="cal-cell prod">Production</div><div class="cal-cell prod">Production</div><div class="cal-cell prod">Production</div>
+  </div>
+  <div class="cal-footnote">Includes: Gastro Agents (45/47), Gastro TLs (3/3), Bot Monitoring (6/8), Social Media (1/1), WFM RTA (2/2), WFM Scheduler (1/1). All in steady-state production with no training activity in February.</div>
+</div>
+
+<div class="sec-sm">Lilly &mdash; South Africa</div>
+<div id="cal-sa" class="cal-section"></div>
+
+<div class="sec-sm">Lilly &mdash; Lagos</div>
+<div id="cal-lagos" class="cal-section"></div>
+
+<div class="sec-sm">Lilly &mdash; Missouri</div>
+<div id="cal-mo" class="cal-section"></div>
+
+<div class="cal-legend">
+  <span><span class="cal-legend-dot p"></span> Production (tracked in Assembled)</span>
+  <span><span class="cal-legend-dot t"></span> Training (NOT in Assembled)</span>
+  <span><span class="cal-legend-dot e"></span> Not yet onboarded</span>
+</div>
+</div>
+
+<!-- ═══════ TAB 5: DEFINITIONS ═══════ -->
+<div id="p-defs" class="pane">
+<div class="card">
+  <div style="padding:12px 16px;border-bottom:1px solid #eee;font-size:12px;font-weight:600">Key terms &amp; billing definitions</div>
+  <div class="def-grid">
+    <div class="def-item"><div class="def-term">Maximum contracted hours</div><div class="def-desc">Max hours Hugo can bill. Formula: billable agents &times; working days &times; hrs/day.</div></div>
+    <div class="def-item"><div class="def-term">Training hours</div><div class="def-desc">Hours contracted agents spend in ~2-week training. <strong>Not tracked in Assembled.</strong></div></div>
+    <div class="def-item"><div class="def-term">Production hours (contracted)</div><div class="def-desc">Hours contracted agents spend in production/nesting after training. Tracked in Assembled.</div></div>
+    <div class="def-item"><div class="def-term">Total invoiced hours</div><div class="def-desc">Training (contracted) + Production (contracted). What GiftHealth pays for.</div></div>
+    <div class="def-item"><div class="def-term">Assembled hours</div><div class="def-desc">Hours in Assembled (workforce monitoring). Only captures production/nesting. Includes contracted AND buffer agents. Includes overtime.</div></div>
+    <div class="def-item"><div class="def-term">Buffer agents</div><div class="def-desc">Extra agents above contracted levels for SLA coverage. Never invoiced. Their production appears in Assembled.</div></div>
+    <div class="def-item"><div class="def-term">Overtime hours</div><div class="def-desc">Extra hours requested by GH (Kwik Pen launch). 20% premium. Tracked in Assembled.</div></div>
+    <div class="def-item"><div class="def-term">Total provided hours</div><div class="def-desc">Everything Hugo delivers: Assembled + contracted training + buffer training. Always exceeds invoiced.</div></div>
+  </div>
+</div>
+
+<div class="sec-sm">Why invoiced &ne; assembled (and that's expected)</div>
+<div class="card"><div style="overflow-x:auto;padding:4px 0">
+  <table class="dtbl">
+    <thead><tr><th style="width:35%">Scenario</th><th>Relationship</th><th>Why</th><th>Feb example</th></tr></thead>
+    <tbody>
+      <tr><td>Steady-state, no training</td><td class="pos">Invoiced &lt; Assembled</td><td style="font-size:11px">Buffer agents add hrs to Assembled</td><td style="font-size:11px"><strong style="color:#0a7c4e">Lilly SA:</strong> 13,600 vs 17,793</td></tr>
+      <tr><td>Mix of production + training</td><td>Invoiced &cong; Assembled</td><td style="font-size:11px">Training offsets buffer production</td><td style="font-size:11px"><strong style="color:#d97706">MO W1&amp;2:</strong> 12,000 vs 9,319</td></tr>
+      <tr><td>All agents in training</td><td class="neg">Invoiced &gt; Assembled</td><td style="font-size:11px">Assembled = 0 (training not tracked)</td><td style="font-size:11px"><strong style="color:#dc2626">Lagos:</strong> 4,800 vs 0</td></tr>
+    </tbody>
+  </table>
+</div></div>
+</div>
+
+</div>
+
+<script>
+function sw(id,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('act'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('act'));
+  document.getElementById('p-'+id).classList.add('act');
+  btn.classList.add('act');
+}
+
+// Tooltip
+const tip=document.getElementById('tooltip');
+document.addEventListener('mouseover',e=>{
+  const el=e.target.closest('[data-tip]');
+  if(!el)return;
+  tip.innerHTML=el.getAttribute('data-tip');
+  tip.style.display='block';
+  const r=el.getBoundingClientRect();
+  let left=r.left+r.width/2-200;
+  tip.style.left=left+'px';tip.style.top='0px';
+  const th=tip.offsetHeight;
+  let top=r.top-th-12;
+  if(top<8)top=r.bottom+10;
+  if(left<8)left=8;
+  if(left+400>window.innerWidth)left=window.innerWidth-408;
+  tip.style.left=left+'px';tip.style.top=top+'px';
+});
+document.addEventListener('mouseout',e=>{if(e.target.closest('[data-tip]'))tip.style.display='none';});
+
+// Expand
+document.querySelectorAll('.expand-trigger').forEach(tr=>{
+  tr.addEventListener('click',e=>{
+    if(e.target.closest('.cbadge'))return;
+    const tgt=tr.getAttribute('data-target');
+    const open=tr.classList.toggle('open');
+    document.querySelectorAll('#'+tgt).forEach(d=>d.classList.toggle('open',open));
+  });
+});
+
+// Recon
+const RD=[
+  {label:'Lilly SA (Agents)',sub:'85 contracted / 103 actual',prod:13600,train:0,asm:17793,buf:0,
+   comment:'All 85 contracted in production. 18 buffer agents add 4,193 extra hrs. Assembled (17,793) exceeds invoiced (13,600) by 30.8%. Hugo absorbs buffer hours.'},
+  {label:'Lilly Lagos (Agents)',sub:'60 contracted / 75 actual',prod:0,train:4800,asm:0,buf:1200,
+   comment:'Wave 1 started 02/16. All in training for 10 days. Assembled = 0 (training not tracked). Invoice = 60 x 10 x 8 = 4,800. Hugo also trained 15 buffer agents (1,200 hrs) at its own cost.'},
+  {label:'Lilly MO W1&2 (Agents)',sub:'75 contracted / 78 actual',prod:8880,train:3120,asm:9319,buf:0,
+   comment:'W1 (45): production all 20d. W2 (30): training 13d then production 7d. Assembled (9,319) captures W1 + W2 from ~02/23; includes 3 buffer agents\u2019 production hours. Invoice (12,000) > Assembled because 3,120 training hrs not in Assembled.'},
+  {label:'Lilly MO W3 (Agents)',sub:'26 contracted / 26 actual',prod:0,train:1040,asm:0,buf:0,
+   comment:'26 agents started training 02/23. 5 working days, all training. Assembled = 0 (agents in training). No buffer agents.'},
+  {label:'All Team Leads',sub:'24 TLs across all locations',prod:0,train:3120,asm:0,buf:0,
+   comment:'All 24 TLs in training during Feb. Assembled = 0 (TL hours not tracked in Assembled during training).'}
+];
+function buildRecon(){
+  const box=document.getElementById('recon-box');
+  const mx=18000;
+  RD.forEach(d=>{
+    const total=d.prod+d.train;
+    const sc=Math.max(total,d.asm+d.buf,mx);
+    const div=document.createElement('div');div.className='recon-item';
+    div.innerHTML=`
+      <div class="recon-head"><div class="recon-label">${d.label}<small>${d.sub}</small></div><div class="recon-val">Invoiced: ${total.toLocaleString()} hrs</div></div>
+      <div class="bar-line"><span class="bar-tag">Invoiced</span><div class="bar-track">
+        ${d.prod>0?`<div class="bar-fill inv-prod" style="width:${(d.prod/sc*100).toFixed(1)}%" data-tip="Production (contracted): ${d.prod.toLocaleString()} hrs">${d.prod>800?d.prod.toLocaleString():''}</div>`:''}
+        ${d.train>0?`<div class="bar-fill inv-train" style="width:${(d.train/sc*100).toFixed(1)}%" data-tip="Training (contracted): ${d.train.toLocaleString()} hrs">${d.train>400?d.train.toLocaleString():''}</div>`:''}
+      </div></div>
+      <div class="bar-line"><span class="bar-tag">Buffer</span><div class="bar-track">
+        ${d.buf>0?`<div class="bar-fill buf" style="width:${(d.buf/sc*100).toFixed(1)}%" data-tip="Buffer training (unbilled): ${d.buf.toLocaleString()} hrs">${d.buf.toLocaleString()}</div>`:`<div class="bar-fill asm-zero">0 &mdash; no buffer training</div>`}
+      </div></div>
+      <div class="bar-line"><span class="bar-tag">Assembled</span><div class="bar-track">
+        ${d.asm>0?`<div class="bar-fill asm" style="width:${(d.asm/sc*100).toFixed(1)}%" data-tip="Assembled scheduled: ${d.asm.toLocaleString()} hrs (includes buffer production)">${d.asm.toLocaleString()}</div>`:
+        `<div class="bar-fill asm-zero">0 &mdash; ${d.train>0?(d.label.includes('Team')?'TL hrs not tracked in Assembled':'all agents in training'):'no data'}</div>`}
+      </div></div>
+      <div class="recon-comment">${d.comment}</div>`;
+    box.appendChild(div);
+  });
+}
+
+// Calendar
+function buildCal(id,waves){
+  const el=document.getElementById(id);
+  const wks=[{l:'Week 1',d:'Feb 2-6'},{l:'Week 2',d:'Feb 9-13'},{l:'Week 3',d:'Feb 16-20'},{l:'Week 4',d:'Feb 23-27'}];
+  let h='<div class="cal-grid">';
+  h+='<div class="cal-hdr">Wave / Cohort</div>';
+  wks.forEach(w=>h+=`<div class="cal-hdr">${w.l}<br><span style="font-weight:400;font-size:8px;opacity:.6">${w.d}</span></div>`);
+  waves.forEach(w=>{
+    h+=`<div class="cal-row-label"><strong>${w.name}</strong><small>${w.count}</small></div>`;
+    w.wk.forEach(s=>{
+      const cls=s==='prod'?'prod':s==='train'?'train':s==='mixed'?'mixed':'empty';
+      const txt=s==='prod'?'Production':s==='train'?'Training':s==='mixed'?'Train &rarr; Prod':'&mdash;';
+      h+=`<div class="cal-cell ${cls}">${txt}</div>`;
+    });
+  });
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+window.addEventListener('load',()=>{
+  buildRecon();
+  buildCal('cal-sa',[
+    {name:'Lilly SA (Agents)',count:'85 billed / 103 actual',wk:['prod','prod','prod','prod']},
+    {name:'Lilly SA (TLs)',count:'9 billed / 9 actual',wk:['train','train','train','train']},
+  ]);
+  buildCal('cal-lagos',[
+    {name:'Lilly Lagos (Agents)',count:'60 billed / 75 actual',wk:['empty','empty','train','train']},
+    {name:'Lilly Lagos (TLs)',count:'6 billed / 6 actual',wk:['empty','empty','train','train']},
+  ]);
+  buildCal('cal-mo',[
+    {name:'MO Wave 1 (Agents)',count:'45 agents &mdash; production all month',wk:['prod','prod','prod','prod']},
+    {name:'MO Wave 2 (Agents)',count:'30 agents',wk:['train','train','mixed','prod']},
+    {name:'MO Wave 3 (Agents)',count:'26 agents &mdash; training from 02/23',wk:['empty','empty','empty','train']},
+    {name:'MO W1&2 (TLs)',count:'7 TLs',wk:['prod','prod','prod','prod']},
+    {name:'MO W3 (TLs)',count:'2 TLs &mdash; training from 02/23',wk:['empty','empty','empty','train']},
+  ]);
+});
+</script>
+</body>
+</html>
