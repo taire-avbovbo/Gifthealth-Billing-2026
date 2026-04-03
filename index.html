@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GiftHealth — February 2026 Billing Report</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAZElEQVR4nGMUFBT8zzCAgGkgLR91wKgDGBgYGFjwST7ZZ4ohJuN0Gq+BpOoZ8BAYdcCoAwbcAXizITaALZtRAgY8BEYdMOAOIDkRklMX4AMDHgKjDhh1wKgDGEd7RqMOGPEOAADoOw2Agco1igAAAABJRU5ErkJggg==">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -243,7 +244,7 @@ body{font-family:'DM Sans',sans-serif;background:#fffefa;color:#111;font-size:13
 
 <div class="summary-box">
   <div style="margin-bottom:6px">Hugo provided <span class="big-num">48,853</span> total hours but only invoiced <span class="big-num">43,660</span> &mdash; a gap of <span class="big-num">5,193</span> hours <span style="color:#5eead4;font-weight:700">(11.9%)</span></div>
-  <div class="exp">Invoiced hours only include production + training for the <strong style="color:#fff">contracted</strong> headcount. Hugo staffs additional "buffer" agents (368 total vs. 328 billable) and absorbs their hours. Assembled also includes buffer agents in production, which is why Assembled scheduled hours (35,573) can exceed contracted production hours (22,480). <strong style="color:#5eead4">Assembled only tracks agents once they enter production/nesting &mdash; training hours never appear in Assembled.</strong></div>
+  <div class="exp">Invoiced hours only include production + training for the <strong style="color:#fff">contracted</strong> headcount. Hugo staffs additional "buffer" agents (368 total vs. 328 billable) and absorbs their hours. Assembled also includes buffer agents in production, which is why Assembled scheduled hours (35,573) can exceed contracted production hours (22,480). <strong style="color:#5eead4">Assembled only tracks agents in production &mdash; nesting is part of training and training hours never appear in Assembled.</strong></div>
 </div>
 
 <div class="sec">What GiftHealth pays for</div>
@@ -300,13 +301,13 @@ body{font-family:'DM Sans',sans-serif;background:#fffefa;color:#111;font-size:13
   <div class="scenario-card" style="--sc:#d97706">
     <div class="scenario-num">Scenario 2</div>
     <div class="scenario-title" style="color:#d97706">Invoiced &cong; Assembled</div>
-    <div class="scenario-body"><strong>Mix of production + training.</strong> Training hrs (not in Assembled) roughly offset buffer production hrs (in Assembled but not billed).</div>
+    <div class="scenario-body"><strong>Mix of production + training.</strong> Training hrs are not reflected in Assembled, but Assembled hrs reflect both contracted and buffer production hours. The combined mix can be a bit confusing.</div>
     <div class="scenario-example" style="--se:#fffbeb;border-left:3px solid #d97706">
       <div class="ex-label" style="color:#d97706">Lilly MO Wave 1&amp;2 &mdash; Missouri</div>
       <div class="ex-data">
         Invoiced: <strong style="color:#0a7c4e">12,000</strong> hrs<br>
         Assembled: <strong style="color:#d97706">9,319</strong> hrs<br>
-        Diff: <strong>3,120 training hrs</strong> not in Assembled
+        Invoiced hrs reflect a blended period: W1 (45 agents) on 20 full days of production, plus W2 (30 agents) split across 13 days training + 7 days production. Only the 7 days of W2 production appear in Assembled.
       </div>
     </div>
   </div>
@@ -353,7 +354,7 @@ body{font-family:'DM Sans',sans-serif;background:#fffefa;color:#111;font-size:13
 
 <div class="card"><div style="overflow-x:auto">
 <table class="dtbl" id="lilly-tbl">
-  <thead><tr><th>Workflow</th><th>Billable</th><th>Actual</th><th>Days</th><th>Training Hrs</th><th>Prod Hrs</th><th>Invoiced Hrs</th><th>Assembled</th><th>Rate</th><th>OT Hrs</th><th>OT Rate</th><th>Amount</th><th></th></tr></thead>
+  <thead><tr><th>Workflow</th><th>Billable</th><th>Actual</th><th>Days</th><th>Training Hrs</th><th>Contracted Prod Hrs</th><th>Invoiced Hrs</th><th>Assembled</th><th>Rate</th><th>OT Hrs</th><th>OT Rate</th><th>Amount</th><th></th></tr></thead>
   <tbody>
     <tr class="sec-row"><td colspan="13">Agents</td></tr>
 
@@ -441,9 +442,9 @@ body{font-family:'DM Sans',sans-serif;background:#fffefa;color:#111;font-size:13
   <div class="def-grid">
     <div class="def-item"><div class="def-term">Maximum contracted hours</div><div class="def-desc">Max hours Hugo can bill. Formula: billable agents &times; working days &times; hrs/day.</div></div>
     <div class="def-item"><div class="def-term">Training hours</div><div class="def-desc">Hours contracted agents spend in ~2-week training. <strong>Not tracked in Assembled.</strong></div></div>
-    <div class="def-item"><div class="def-term">Production hours (contracted)</div><div class="def-desc">Hours contracted agents spend in production/nesting after training. Tracked in Assembled.</div></div>
+    <div class="def-item"><div class="def-term">Production hours (contracted)</div><div class="def-desc">Hours contracted agents spend in production after training. Tracked in Assembled.</div></div>
     <div class="def-item"><div class="def-term">Total invoiced hours</div><div class="def-desc">Training (contracted) + Production (contracted). What GiftHealth pays for.</div></div>
-    <div class="def-item"><div class="def-term">Assembled hours</div><div class="def-desc">Hours in Assembled (workforce monitoring). Only captures production/nesting. Includes contracted AND buffer agents. Includes overtime.</div></div>
+    <div class="def-item"><div class="def-term">Assembled hours</div><div class="def-desc">Hours in Assembled (workforce monitoring). Only captures production hours. Nesting is part of training and is not tracked. Includes contracted AND buffer agents. Includes overtime.</div></div>
     <div class="def-item"><div class="def-term">Buffer agents</div><div class="def-desc">Extra agents above contracted levels for SLA coverage. Never invoiced. Their production appears in Assembled.</div></div>
     <div class="def-item"><div class="def-term">Overtime hours</div><div class="def-desc">Extra hours requested by GH (Kwik Pen launch). 20% premium. Tracked in Assembled.</div></div>
     <div class="def-item"><div class="def-term">Total provided hours</div><div class="def-desc">Everything Hugo delivers: Assembled + contracted training + buffer training. Always exceeds invoiced.</div></div>
@@ -456,7 +457,7 @@ body{font-family:'DM Sans',sans-serif;background:#fffefa;color:#111;font-size:13
     <thead><tr><th style="width:35%">Scenario</th><th>Relationship</th><th>Why</th><th>Feb example</th></tr></thead>
     <tbody>
       <tr><td>Steady-state, no training</td><td class="pos">Invoiced &lt; Assembled</td><td style="font-size:11px">Buffer agents add hrs to Assembled</td><td style="font-size:11px"><strong style="color:#0a7c4e">Lilly SA:</strong> 13,600 vs 17,793</td></tr>
-      <tr><td>Mix of production + training</td><td>Invoiced &cong; Assembled</td><td style="font-size:11px">Training offsets buffer production</td><td style="font-size:11px"><strong style="color:#d97706">MO W1&amp;2:</strong> 12,000 vs 9,319</td></tr>
+      <tr><td>Mix of production + training</td><td>Invoiced &cong; Assembled</td><td style="font-size:11px">Training hrs not reflected in Assembled, but Assembled hrs reflect contracted and buffer hours. Combined mix can be a bit confusing.</td><td style="font-size:11px"><strong style="color:#d97706">MO W1&amp;2:</strong> 12,000 vs 9,319</td></tr>
       <tr><td>All agents in training</td><td class="neg">Invoiced &gt; Assembled</td><td style="font-size:11px">Assembled = 0 (training not tracked)</td><td style="font-size:11px"><strong style="color:#dc2626">Lagos:</strong> 4,800 vs 0</td></tr>
     </tbody>
   </table>
