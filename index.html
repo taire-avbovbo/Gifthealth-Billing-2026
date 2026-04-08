@@ -241,13 +241,13 @@ body{font-family:'DM Sans',sans-serif;background:#fffefa;color:#111;font-size:13
 <div id="pending-screen" class="auth-screen" style="display:none;">
   <div class="auth-box">
     <div style="font-size:40px;margin-bottom:16px;">&#128274;</div>
-    <div style="font-size:20px;font-weight:700;color:#111;margin-bottom:6px;">Access Required</div>
-    <div style="font-size:13px;color:#555;margin-bottom:24px;line-height:1.6;">You currently don't have access to this report. Access must be granted by an administrator.</div>
+    <div style="font-size:20px;font-weight:700;color:#111;margin-bottom:6px;">Access Request Received</div>
+    <div style="font-size:13px;color:#555;margin-bottom:24px;line-height:1.6;">Your request for access is being reviewed. You will be able to view the billing report once an administrator approves your account.</div>
     <div style="font-size:12px;color:#555;padding:12px 16px;background:#fffbeb;border-left:3px solid #f5cf46;text-align:left;margin-bottom:20px;line-height:1.6;">
-      <strong>To request access:</strong><br>
-      Please contact your Hugo account manager or email the billing team to have your access approved.
+      <strong>Need faster access?</strong><br>
+      Please contact your administrator or email <strong>taire.avbovbo@hugotech.co</strong> for more details.
     </div>
-    <div style="font-size:11px;color:#888;margin-bottom:16px;">Your sign-up has been recorded. You will be able to access the report once an admin approves your account.</div>
+    <div style="font-size:11px;color:#888;margin-bottom:16px;" id="pending-email-display"></div>
     <button class="auth-btn" onclick="signOut()" style="background:#555;">Sign Out</button>
   </div>
 </div>
@@ -358,7 +358,7 @@ const ADMINS=['taire.avbovbo@hugotech.co','funmi@hugotech.co'];
 function isAdmin(e){return ADMINS.includes(e.toLowerCase());}
 const HUGO_DOMAIN='hugotech.co';
 const CLIENTS={gifthealth:{name:'GiftHealth',domains:['gifthealth.com'],approvers:['madi@gifthealth.com']}};
-const DEFAULT_STATUSES={feb:'accepted',mar:'draft'};
+const DEFAULT_STATUSES={feb:'draft',mar:'draft'};
 let invoiceStatuses={};
 function isApprover(email){return Object.values(CLIENTS).some(c=>c.approvers&&c.approvers.includes(email.toLowerCase()));}
 function isClient(email){return!isHugo(email)&&!isAdmin(email);}
@@ -513,7 +513,9 @@ function setupPresence(user){
         const d=doc.data();
         const ll=d.lastLogin?d.lastLogin.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Never';
         const fr=d.forceReset?'<span style="color:#f5cf46;font-size:8px;margin-left:4px;">[PW RESET]</span>':'';
-        h+='<div class="admin-user"><div class="admin-dot" style="background:#2563eb"></div><div class="admin-email">'+d.email+fr+'</div><div class="admin-time">'+ll+'</div></div>';
+        const canRevoke=!isAdmin(d.email);
+        const revokeBtn=canRevoke?'<button class="admin-approve no" onclick="revokeUser(\''+doc.id+'\',\''+d.email+'\')" style="margin-left:4px;font-size:8px;">Revoke</button>':'';
+        h+='<div class="admin-user"><div class="admin-dot" style="background:#2563eb"></div><div class="admin-email">'+d.email+fr+'</div><div class="admin-time">'+ll+'</div>'+revokeBtn+'</div>';
       });
       el.innerHTML=h;
     });
@@ -535,10 +537,12 @@ function approveUser(uid,approve){
   if(approve){
     db.collection('users').doc(uid).update({approved:true,approvedAt:firebase.firestore.FieldValue.serverTimestamp(),approvedBy:auth.currentUser.email});
   } else {
-    // Deny = delete the Firestore doc (they can still re-request)
     db.collection('users').doc(uid).delete();
-    // Also delete their Firebase Auth account would require admin SDK, so just remove access
   }
+}
+function revokeUser(uid,email){
+  if(!confirm('Revoke access for '+email+'? They will be locked out immediately.')){return;}
+  db.collection('users').doc(uid).update({approved:false,revokedAt:firebase.firestore.FieldValue.serverTimestamp(),revokedBy:auth.currentUser.email});
 }
 // ═══ AUTH STATE ═══
 auth.onAuthStateChanged(user=>{
@@ -582,6 +586,8 @@ function showPending(){
   document.getElementById('main-app').style.display='none';
   document.getElementById('reset-screen').style.display='none';
   document.getElementById('pending-screen').style.display='flex';
+  const pe=document.getElementById('pending-email-display');
+  if(pe&&auth.currentUser)pe.textContent='Signed in as '+auth.currentUser.email;
 }
 
 // ═══ BILLING DATA (same as v4) ═══
@@ -704,6 +710,7 @@ function render(){
     const meta=invoiceStatuses[curClient+'_'+curMonth]||{};
     const by=meta.acceptedBy||'';
     statusHTML='<div class="inv-status-bar accepted-bar"><strong>ACCEPTED</strong> \u2014 Invoice accepted.'+(by?' Approved by '+by:'')+'</div>';
+    if(userIsAdm)statusHTML+='<div class="invoice-actions"><button class="inv-btn retract" onclick="setInvoiceStatus(\''+curClient+'\',\''+curMonth+'\',\'draft\')">Retract to Draft</button><button class="inv-btn retract" onclick="setInvoiceStatus(\''+curClient+'\',\''+curMonth+'\',\'submitted\')" style="background:#d97706">Move to Submitted</button></div>';
   }
   document.getElementById('inv-status-area').innerHTML=statusHTML;
 
