@@ -645,19 +645,40 @@ function switchMonth(m,btn){curMonth=m;document.querySelectorAll('.month-pill').
 // Invoice status management
 function loadStatuses(cb){
   db.collection('invoiceStatus').onSnapshot(snap=>{
+    window._statusLoaded=true;
     invoiceStatuses={};
     snap.forEach(doc=>invoiceStatuses[doc.id]=doc.data());
-    // Initialize defaults if missing
-    Object.keys(DEFAULT_STATUSES).forEach(m=>{
-      const key=curClient+'_'+m;
-      if(!invoiceStatuses[key]){
-        invoiceStatuses[key]={status:DEFAULT_STATUSES[m]};
-        db.collection('invoiceStatus').doc(key).set({status:DEFAULT_STATUSES[m]});
-      }
-    });
+    // Initialize defaults if missing (only admins write defaults)
+    if(isAdmin(auth.currentUser.email)){
+      Object.keys(DEFAULT_STATUSES).forEach(m=>{
+        const key=curClient+'_'+m;
+        if(!invoiceStatuses[key]){
+          invoiceStatuses[key]={status:DEFAULT_STATUSES[m]};
+          db.collection('invoiceStatus').doc(key).set({status:DEFAULT_STATUSES[m]});
+        }
+      });
+    }
     if(cb)cb();
     render();
+  },err=>{
+    console.error('Firestore status read failed:',err);
+    // Fallback: assume submitted so content shows for all users
+    Object.keys(DATA[curClient]||{}).forEach(m=>{
+      const key=curClient+'_'+m;
+      invoiceStatuses[key]={status:'submitted'};
+    });
+    render();
   });
+  // Safety fallback: if Firestore hasn't responded in 3 seconds, render anyway
+  setTimeout(()=>{
+    if(!window._statusLoaded){
+      Object.keys(DATA[curClient]||{}).forEach(m=>{
+        const key=curClient+'_'+m;
+        if(!invoiceStatuses[key])invoiceStatuses[key]={status:'submitted'};
+      });
+      render();
+    }
+  },3000);
 }
 function getStatus(client,month){const k=client+'_'+month;return(invoiceStatuses[k]&&invoiceStatuses[k].status)||'draft';}
 function setInvoiceStatus(client,month,status){
@@ -671,6 +692,7 @@ function setInvoiceStatus(client,month,status){
 }
 
 function render(){
+  try{
   const cd=DATA[curClient];if(!cd)return;
   const userEmail=auth.currentUser?auth.currentUser.email:'';
   const userIsClient=isClient(userEmail);
@@ -764,6 +786,7 @@ function render(){
       invEl.innerHTML=ih;
     }
   }
+  }catch(e){console.error('Render error:',e);}
 }
 
 function sw(id,btn){document.querySelectorAll('.pane').forEach(p=>p.classList.remove('act'));document.querySelectorAll('.tab').forEach(b=>b.classList.remove('act'));document.getElementById('p-'+id).classList.add('act');btn.classList.add('act');}
